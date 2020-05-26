@@ -1,3 +1,9 @@
+This is a fork of the official tensorflow java repositiory to be used until they have released a stable version.
+
+Until then this repo can be used to patch, package and deploy an internal version.
+
+
+
 # TensorFlow for Java
 
 ***!!! IMPORTANT NOTICE !!! This repository is UNDER CONSTRUCTION and does not yet host the code of the 
