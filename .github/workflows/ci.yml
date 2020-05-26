@@ -13,7 +13,7 @@ jobs:
     container: nvidia/cuda:10.1-cudnn7-devel-centos7
     strategy:
       matrix:
-        ext: ["", -mkl, -gpu, -mkl-gpu]
+        ext: [-mkl-gpu]
     steps:
       - name: Install environment
         run: |
@@ -49,7 +49,7 @@ jobs:
     runs-on: macos-latest
     strategy:
       matrix:
-        ext: ["", -mkl]
+        ext: [-mkl]
     steps:
       - name: Install environment
         run: |
