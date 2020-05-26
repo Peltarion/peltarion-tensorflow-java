@@ -44,31 +44,28 @@
   </properties>
 
   <repositories>
-    <repository>
-      <id>sonatype-nexus-snapshots</id>
-      <name>Sonatype Nexus Snapshots</name>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
+      <repository>
+          <id>nexus</id>
+          <url>https://nexus.plattan.fi/repository/maven-public/</url>
+      </repository>
+      <repository>
+          <id>nexus-snapshot</id>
+          <url>https://nexus.plattan.fi/repository/maven-snapshots/</url>
+      </repository>
   </repositories>
-  <pluginRepositories>
-    <pluginRepository>
-      <id>sonatype-nexus-snapshots</id>
-      <name>Sonatype Nexus Snapshots</name>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </pluginRepository>
-  </pluginRepositories>
+
+  <distributionManagement>
+      <snapshotRepository>
+          <id>nexus-snapshots</id>
+          <name>Snapshot Repository</name>
+          <url>https://nexus.plattan.fi/repository/maven-snapshots/</url>
+      </snapshotRepository>
+      <repository>
+          <id>nexus</id>
+          <name>Release Repository</name>
+          <url>https://nexus.plattan.fi/repository/maven-releases/</url>
+      </repository>
+  </distributionManagement>
 
   <dependencyManagement>
     <dependencies>
@@ -91,36 +88,6 @@
 	  </dependency>
     </dependencies>
   </dependencyManagement>
-
-  <!-- Two profiles are used:
-       ossrh - deploys to ossrh/maven central
-       bintray - deploys to bintray/jcenter. -->
-  <profiles>
-    <profile>
-      <id>ossrh</id>
-      <distributionManagement>
-        <!-- Sonatype requirements from http://central.sonatype.org/pages/apache-maven.html -->
-        <snapshotRepository>
-          <id>ossrh</id>
-          <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </snapshotRepository>
-        <repository>
-          <id>ossrh</id>
-          <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-        </repository>
-      </distributionManagement>
-    </profile>
-    <profile>
-      <id>bintray</id>
-      <distributionManagement>
-        <!-- https://blog.bintray.com/2015/09/17/publishing-your-maven-project-to-bintray/ -->
-        <repository>
-          <id>bintray</id>
-          <url>https://api.bintray.com/maven/google/tensorflow/tensorflow/;publish=0</url>
-        </repository>
-      </distributionManagement>
-    </profile>
-  </profiles>
 
   <!-- http://central.sonatype.org/pages/requirements.html#developer-information -->
   <developers>
@@ -161,4 +128,3 @@
   </build>
 
 </project>
-
