@@ -40,10 +40,7 @@ jobs:
           echo "Fixing HOME to /root (was '$HOME')"
           export HOME=/root
           mkdir -p $HOME/.m2
-          [[ "${{ github.event_name }}" == "push" ]] && MAVEN_PHASE=deploy || MAVEN_PHASE=install
-          echo "<settings><servers><server><id>nexus</id><username>${{ secrets.CI_DEPLOY_USERNAME }}</username><password>${{ secrets.CI_DEPLOY_PASSWORD }}</password></server></servers></settings>" > $HOME/.m2/settings.xml
-          echo Executing Maven $MAVEN_PHASE
-          mvn clean $MAVEN_PHASE -B -U -e -Djavacpp.platform=linux-x86_64 -Djavacpp.platform.extension=${{ matrix.ext }}
+          mvn clean install -B -U -e -Djavacpp.platform=linux-x86_64 -Djavacpp.platform.extension=${{ matrix.ext }}
           df -h
   macosx-x86_64:
     runs-on: macos-latest
@@ -67,11 +64,8 @@ jobs:
           mvn -version
           bazel version
           mkdir -p $HOME/.m2
-          [[ "${{ github.event_name }}" == "push" ]] && MAVEN_PHASE=deploy || MAVEN_PHASE=install
-          echo "<settings><servers><server><id>nexus</id><username>${{ secrets.CI_DEPLOY_USERNAME }}</username><password>${{ secrets.CI_DEPLOY_PASSWORD }}</password></server></servers></settings>" > $HOME/.m2/settings.xml
           df -h
-          echo Executing Maven $MAVEN_PHASE
-          mvn clean $MAVEN_PHASE -B -U -e -Djavacpp.platform=macosx-x86_64 -Djavacpp.platform.extension=${{ matrix.ext }}
+          mvn clean install -B -U -e -Djavacpp.platform=macosx-x86_64 -Djavacpp.platform.extension=${{ matrix.ext }}
           df -h
   # windows-x86_64:
   #   runs-on: windows-latest
@@ -148,5 +142,8 @@ jobs:
               [[ -n $CLASSIFIERS ]] && CLASSIFIERS=$CLASSIFIERS,${BASH_REMATCH[1]} || CLASSIFIERS=${BASH_REMATCH[1]}
             fi
           done
-          echo "<settings><servers><server><id>nexus</id><username>${{ secrets.CI_DEPLOY_USERNAME }}</username><password>${{ secrets.CI_DEPLOY_PASSWORD }}</password></server></servers></settings>" > $HOME/.m2/settings.xml
-          mvn clean deploy -Predeploy -N -B -U -e -Dfiles=$FILES -Dtypes=$TYPES -Dclassifiers=$CLASSIFIERS
+      - name: Save artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: jars
+          path: '*.jar'
