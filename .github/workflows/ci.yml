@@ -8,43 +8,45 @@ on:
       - master
 
 jobs:
-  linux-x86_64:
-    runs-on: ubuntu-latest
-    container: nvidia/cuda:10.1-cudnn7-devel-centos7
-    strategy:
-      matrix:
-        ext: [-mkl-gpu]
-    steps:
-      - name: Install environment
-        run: |
-          yum -y update
-          yum -y install centos-release-scl-rh epel-release
-          yum -y install java-1.8.0-openjdk-devel devtoolset-7 rh-git218 patch python36-devel python36-pip python36-six
-          echo Downloading Maven
-          curl -L https://archive.apache.org/dist/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz -o $HOME/apache-maven-3.6.3-bin.tar.gz
-          tar xzf $HOME/apache-maven-3.6.3-bin.tar.gz -C /opt/
-          ln -sf /opt/apache-maven-3.6.3/bin/mvn /usr/bin/mvn
-          echo Downloading Bazel
-          curl -L https://github.com/bazelbuild/bazel/releases/download/2.0.0/bazel-2.0.0-installer-linux-x86_64.sh -o bazel.sh --retry 10
-          bash bazel.sh
-      - name: Checkout repository
-        uses: actions/checkout@v1
-      - name: Build project
-        run: |
-          source scl_source enable devtoolset-7 rh-git218 || true
-          git --version
-          gcc --version
-          mvn -version
-          bazel version
-          df -h
-          echo "Fixing HOME to /root (was '$HOME')"
-          export HOME=/root
-          mkdir -p $HOME/.m2
-          mvn clean install -B -U -e -Djavacpp.platform=linux-x86_64 -Djavacpp.platform.extension=${{ matrix.ext }}
-          df -h
-      - name: Upload artifact
-        uses: actions/checkout@v1
-        path: /Users/runner/.m2/repository/org/tensorflow/**/*
+  # linux-x86_64:
+  #   runs-on: ubuntu-latest
+  #   container: nvidia/cuda:10.1-cudnn7-devel-centos7
+  #   strategy:
+  #     matrix:
+  #       ext: [-mkl-gpu]
+  #   steps:
+  #     - name: Install environment
+  #       run: |
+  #         yum -y update
+  #         yum -y install centos-release-scl-rh epel-release
+  #         yum -y install java-1.8.0-openjdk-devel devtoolset-7 rh-git218 patch python36-devel python36-pip python36-six
+  #         echo Downloading Maven
+  #         curl -L https://archive.apache.org/dist/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz -o $HOME/apache-maven-3.6.3-bin.tar.gz
+  #         tar xzf $HOME/apache-maven-3.6.3-bin.tar.gz -C /opt/
+  #         ln -sf /opt/apache-maven-3.6.3/bin/mvn /usr/bin/mvn
+  #         echo Downloading Bazel
+  #         curl -L https://github.com/bazelbuild/bazel/releases/download/2.0.0/bazel-2.0.0-installer-linux-x86_64.sh -o bazel.sh --retry 10
+  #         bash bazel.sh
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v1
+  #     - name: Build project
+  #       run: |
+  #         source scl_source enable devtoolset-7 rh-git218 || true
+  #         git --version
+  #         gcc --version
+  #         mvn -version
+  #         bazel version
+  #         df -h
+  #         echo "Fixing HOME to /root (was '$HOME')"
+  #         export HOME=/root
+  #         mkdir -p $HOME/.m2
+  #         mvn clean install -B -U -e -Djavacpp.platform=linux-x86_64 -Djavacpp.platform.extension=${{ matrix.ext }}
+  #         df -h
+  #     - name: Upload artifact
+  #       uses: actions/checkout@v1
+  #       with:
+  #         name: linux-jars
+  #         path: /Users/runner/.m2/repository/org/tensorflow/**/*
   macosx-x86_64:
     runs-on: macos-latest
     strategy:
@@ -72,7 +74,9 @@ jobs:
           df -h
       - name: Upload artifact
         uses: actions/checkout@v1
-        path: /Users/runner/.m2/repository/org/tensorflow/**/*
+        with:
+          name: macos-jars
+          path: /Users/runner/.m2/repository/org/tensorflow/**/*
   # windows-x86_64:
   #   runs-on: windows-latest
   #   strategy:
