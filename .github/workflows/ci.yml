@@ -46,7 +46,7 @@ jobs:
         uses:  actions/upload-artifact@v2
         with:
           name: linux-jars
-          path: /home/runner/.m2/repository/org/tensorflow/**/*
+          path: /root/.m2/repository/org/tensorflow/**/*
   # macosx-x86_64:
   #   runs-on: macos-latest
   #   strategy:
