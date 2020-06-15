@@ -133,27 +133,27 @@ jobs:
   #         if ERRORLEVEL 1 exit /b
   #         df -h
   #         wmic pagefile list /format:list
-redeploy:
-  if: github.event_name == 'push'
-  needs: [linux-x86_64, macosx-x86_64]
-  runs-on: ubuntu-latest
-  steps:
-    - name: Checkout repository
-      uses: actions/checkout@v1
-    - name: Redeploy snapshot artifacts
-      run: |
-        cd tensorflow-core
-        mvn dependency:resolve -Predeploy -N -B -U -e -Djavacpp.platform.custom -Djavacpp.platform.linux-x86_64 -Djavacpp.platform.macosx-x86_64
-        cp $HOME/.m2/repository/org/tensorflow/tensorflow-core-api/*-SNAPSHOT/tensorflow-core-api-*-SNAPSHOT*.jar .
-        for f in *.jar; do
-          if [[ $f =~ tensorflow-core-api-.*SNAPSHOT-(.*).jar ]]; then
-             [[ -n $FILES ]] && FILES=$FILES,$f || FILES=$f
-             [[ -n $TYPES ]] && TYPES=$TYPES,jar || TYPES=jar
-             [[ -n $CLASSIFIERS ]] && CLASSIFIERS=$CLASSIFIERS,${BASH_REMATCH[1]} || CLASSIFIERS=${BASH_REMATCH[1]}
-          fi
-        done
-        echo "<settings><servers><server><id>github</id><username>peltarion</username><password>${{ secrets.GITHUB_TOKEN }}</password></server></servers></settings>" > $HOME/.m2/settings.xml
-        mvn clean deploy -Predeploy -N -B -U -e -Dfiles=$FILES -Dtypes=$TYPES -Dclassifiers=$CLASSIFIERS
+  redeploy:
+    if: github.event_name == 'push'
+    needs: [linux-x86_64, macosx-x86_64]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v1
+      - name: Redeploy snapshot artifacts
+        run: |
+          cd tensorflow-core
+          mvn dependency:resolve -Predeploy -N -B -U -e -Djavacpp.platform.custom -Djavacpp.platform.linux-x86_64 -Djavacpp.platform.macosx-x86_64
+          cp $HOME/.m2/repository/org/tensorflow/tensorflow-core-api/*-SNAPSHOT/tensorflow-core-api-*-SNAPSHOT*.jar .
+          for f in *.jar; do
+            if [[ $f =~ tensorflow-core-api-.*SNAPSHOT-(.*).jar ]]; then
+               [[ -n $FILES ]] && FILES=$FILES,$f || FILES=$f
+               [[ -n $TYPES ]] && TYPES=$TYPES,jar || TYPES=jar
+               [[ -n $CLASSIFIERS ]] && CLASSIFIERS=$CLASSIFIERS,${BASH_REMATCH[1]} || CLASSIFIERS=${BASH_REMATCH[1]}
+            fi
+          done
+          echo "<settings><servers><server><id>github</id><username>peltarion</username><password>${{ secrets.GITHUB_TOKEN }}</password></server></servers></settings>" > $HOME/.m2/settings.xml
+          mvn clean deploy -Predeploy -N -B -U -e -Dfiles=$FILES -Dtypes=$TYPES -Dclassifiers=$CLASSIFIERS
   # artifacts:
   #   needs: [linux-x86_64, macosx-x86_64]
   #   runs-on: ubuntu-latest
