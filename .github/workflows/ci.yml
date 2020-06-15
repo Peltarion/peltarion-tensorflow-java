@@ -42,11 +42,11 @@ jobs:
           mkdir -p $HOME/.m2
           mvn clean install -B -U -e -Djavacpp.platform=linux-x86_64 -Djavacpp.platform.extension=${{ matrix.ext }}
           df -h
-      - name: Upload artifact
-        uses:  actions/upload-artifact@v2
-        with:
-          name: linux-jars
-          path: /root/.m2/repository/org/tensorflow/**/*
+      # - name: Upload artifact
+      #   uses:  actions/upload-artifact@v2
+      #   with:
+      #     name: linux-jars
+      #     path: /root/.m2/repository/org/tensorflow/**/*
   macosx-x86_64:
     runs-on: macos-latest
     strategy:
@@ -72,11 +72,11 @@ jobs:
           df -h
           mvn clean install -B -U -e -Djavacpp.platform=macosx-x86_64 -Djavacpp.platform.extension=${{ matrix.ext }}
           df -h
-      - name: Upload artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: macos-jars
-          path: /Users/runner/.m2/repository/org/tensorflow/**/*
+      # - name: Upload artifact
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: macos-jars
+      #     path: /Users/runner/.m2/repository/org/tensorflow/**/*
   # windows-x86_64:
   #   runs-on: windows-latest
   #   strategy:
