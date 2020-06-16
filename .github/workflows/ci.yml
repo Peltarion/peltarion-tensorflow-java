@@ -43,7 +43,7 @@ jobs:
           mvn -version
           bazel version
           df -h
-          sed -i .bak -e "s/0.1.0-SNAPSHOT/0.1.0-PELTARION-${{ github.sha }}/" `find . -name 'pom.xml'`
+          sed -i.bak -e "s/0.1.0-SNAPSHOT/0.1.0-PELTARION-${{ github.sha }}/" `find . -name 'pom.xml'`
           mvn clean install -B -U -e -Djavacpp.platform=linux-x86_64 -Djavacpp.platform.extension=${{ matrix.ext }}
           if [[-z "${{matrix.ext}}"]]; then
             mvn deploy -B -U -e -Djavacpp.platform=linux-x86_64 -Djavacpp.platform.extension=${{ matrix.ext }}
