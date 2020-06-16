@@ -82,7 +82,7 @@ jobs:
           bazel version
           mkdir -p $HOME/.m2
           df -h
-          mvn clean deploy -B -U -e -Djavacpp.platform=macosx-x86_64 -Djavacpp.platform.extension=${{ matrix.ext }}
+          mvn clean deploy -X -B -U -e -Djavacpp.platform=macosx-x86_64 -Djavacpp.platform.extension=${{ matrix.ext }}
           df -h
       # - name: Upload artifact
       #   uses: actions/upload-artifact@v2
