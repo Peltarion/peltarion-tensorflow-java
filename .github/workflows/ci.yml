@@ -43,9 +43,6 @@ jobs:
           mvn -version
           bazel version
           df -h
-          echo "Fixing HOME to /root (was '$HOME')"
-          export HOME=/root
-          mkdir -p $HOME/.m2
           mvn clean deploy -B -U -e -Djavacpp.platform=linux-x86_64 -Djavacpp.platform.extension=${{ matrix.ext }}
           df -h
       # - name: Upload artifact
