@@ -13,7 +13,7 @@ jobs:
     container: nvidia/cuda:10.1-cudnn7-devel-centos7
     strategy:
       matrix:
-        ext: [-mkl-gpu]
+        ext: ["", -mkl, -gpu, -mkl-gpu]
     steps:
       - name: Install environment
         run: |
@@ -29,7 +29,13 @@ jobs:
           bash bazel.sh
       - name: Checkout repository
         uses: actions/checkout@v1
+      - name: Setup Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
       - name: Build project
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           source scl_source enable devtoolset-7 rh-git218 || true
           git --version
@@ -40,7 +46,7 @@ jobs:
           echo "Fixing HOME to /root (was '$HOME')"
           export HOME=/root
           mkdir -p $HOME/.m2
-          mvn clean install -B -U -e -Djavacpp.platform=linux-x86_64 -Djavacpp.platform.extension=${{ matrix.ext }}
+          mvn clean deploy -B -U -e -Djavacpp.platform=linux-x86_64 -Djavacpp.platform.extension=${{ matrix.ext }}
           df -h
       # - name: Upload artifact
       #   uses:  actions/upload-artifact@v2
@@ -51,7 +57,7 @@ jobs:
     runs-on: macos-latest
     strategy:
       matrix:
-        ext: [-mkl]
+        ext: ["", -mkl]
     steps:
       - name: Install environment
         run: |
@@ -62,7 +68,13 @@ jobs:
           brew install libomp
       - name: Checkout repository
         uses: actions/checkout@v1
+      - name: Setup Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
       - name: Build project
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git --version
           clang --version
@@ -70,7 +82,7 @@ jobs:
           bazel version
           mkdir -p $HOME/.m2
           df -h
-          mvn clean install -B -U -e -Djavacpp.platform=macosx-x86_64 -Djavacpp.platform.extension=${{ matrix.ext }}
+          mvn clean deploy -B -U -e -Djavacpp.platform=macosx-x86_64 -Djavacpp.platform.extension=${{ matrix.ext }}
           df -h
       # - name: Upload artifact
       #   uses: actions/upload-artifact@v2
