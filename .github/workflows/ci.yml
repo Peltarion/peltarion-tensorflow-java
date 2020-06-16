@@ -43,7 +43,14 @@ jobs:
           mvn -version
           bazel version
           df -h
-          mvn clean deploy -B -U -e -Djavacpp.platform=linux-x86_64 -Djavacpp.platform.extension=${{ matrix.ext }}
+          sed -i .bak -e "s/0.1.0-SNAPSHOT/0.1.0-PELTARION-${{ github.sha }}/" **pom.xml
+          mvn clean install -B -U -e -Djavacpp.platform=linux-x86_64 -Djavacpp.platform.extension=${{ matrix.ext }}
+          if [[-z "${{matrix.ext}}"]]; then
+            mvn deploy -B -U -e -Djavacpp.platform=linux-x86_64 -Djavacpp.platform.extension=${{ matrix.ext }}
+          else
+            mvn deploy -pl tensorflow-core-api${{ matrix.ext }} -B -U -e -Djavacpp.platform=linux-x86_64 -Djavacpp.platform.extension=${{ matrix.ext }}
+          fi
+
           df -h
       # - name: Upload artifact
       #   uses:  actions/upload-artifact@v2
@@ -78,8 +85,14 @@ jobs:
           mvn -version
           bazel version
           mkdir -p $HOME/.m2
+          sed -i .bak -e "s/0.1.0-SNAPSHOT/0.1.0-PELTARION-${{ github.sha }}/" **pom.xml
           df -h
-          mvn clean deploy -B -U -e -Djavacpp.platform=macosx-x86_64 -Djavacpp.platform.extension=${{ matrix.ext }}
+          mvn clean install -B -U -e -Djavacpp.platform=macosx-x86_64 -Djavacpp.platform.extension=${{ matrix.ext }}
+          if [[-z "${{matrix.ext}}"]]; then
+            mvn deploy -B -U -e -Djavacpp.platform=macosx-x86_64 -Djavacpp.platform.extension=${{ matrix.ext }}
+          else
+            mvn deploy -pl tensorflow-core-api${{matrix.ext}} -B -U -e -Djavacpp.platform=macosx-x86_64 -Djavacpp.platform.extension=${{ matrix.ext }}
+          fi
           df -h
       # - name: Upload artifact
       #   uses: actions/upload-artifact@v2
