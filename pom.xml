@@ -73,6 +73,13 @@
     </dependencies>
   </dependencyManagement>
 
+  <distributionManagement>
+    <repository>
+      <id>github</id>
+      <url>https://maven.pkg.github.com/Peltarion/peltarion-tensorflow-java</url>
+    </repository>
+  </distributionManagement>
+
   <!-- http://central.sonatype.org/pages/requirements.html#developer-information -->
   <developers>
     <developer>
