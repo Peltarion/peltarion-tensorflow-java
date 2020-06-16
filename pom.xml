@@ -51,19 +51,6 @@
       </repository>
   </repositories>
 
-  <distributionManagement>
-      <snapshotRepository>
-          <id>nexus-snapshots</id>
-          <name>Snapshot Repository</name>
-          <url>https://nexus.plattan.fi/repository/maven-snapshots/</url>
-      </snapshotRepository>
-      <repository>
-          <id>nexus</id>
-          <name>Release Repository</name>
-          <url>https://nexus.plattan.fi/repository/maven-releases/</url>
-      </repository>
-  </distributionManagement>
-
   <dependencyManagement>
     <dependencies>
       <dependency>
