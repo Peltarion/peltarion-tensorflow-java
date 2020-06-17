@@ -48,7 +48,7 @@ jobs:
           if [[ -z "${{matrix.ext}}" ]]; then
             mvn deploy -B -U -e -Djavacpp.platform=linux-x86_64 -Djavacpp.platform.extension=${{ matrix.ext }}
           else
-            mvn deploy -pl tensorflow-core-api${{ matrix.ext }} -B -U -e -Djavacpp.platform=linux-x86_64 -Djavacpp.platform.extension=${{ matrix.ext }}
+            mvn deploy -pl tensorflow-core-platform${{ matrix.ext }} -B -U -e -Djavacpp.platform=linux-x86_64 -Djavacpp.platform.extension=${{ matrix.ext }}
           fi
 
           df -h
@@ -91,7 +91,7 @@ jobs:
           if [[ -z "${{matrix.ext}}" ]]; then
             mvn deploy -B -U -e -Djavacpp.platform=macosx-x86_64 -Djavacpp.platform.extension=${{ matrix.ext }}
           else
-            mvn deploy -pl tensorflow-core-api${{matrix.ext}} -B -U -e -Djavacpp.platform=macosx-x86_64 -Djavacpp.platform.extension=${{ matrix.ext }}
+            mvn deploy -pl tensorflow-core-platform${{matrix.ext}} -B -U -e -Djavacpp.platform=macosx-x86_64 -Djavacpp.platform.extension=${{ matrix.ext }}
           fi
           df -h
       # - name: Upload artifact
