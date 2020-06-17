@@ -42,21 +42,13 @@ jobs:
           gcc --version
           mvn -version
           bazel version
-          df -h
           sed -i.bak -e "s/0.1.0-SNAPSHOT/0.1.0-PELTARION-${{ github.sha }}/" `find . -name 'pom.xml'`
           mvn clean install -B -U -e -Djavacpp.platform=linux-x86_64 -Djavacpp.platform.extension=${{ matrix.ext }}
-          # if [[ -z "${{matrix.ext}}" ]]; then
-          #   mvn deploy -B -U -e -Djavacpp.platform=linux-x86_64 -Djavacpp.platform.extension=${{ matrix.ext }}
-          # else
-          #   mvn deploy -pl tensorflow-core,tensorflow-core-platform${{ matrix.ext }} -B -U -e -Djavacpp.platform=linux-x86_64 -Djavacpp.platform.extension=${{ matrix.ext }}
-          # fi
-
-          df -h
       - name: Upload artifact
         uses:  actions/upload-artifact@v2
         with:
           name: linux-jars${{ matrix.ext }}
-          path: /github/home/.m2/repository/org/tensorflow/**/*
+          path: /root/.m2/repository/org/tensorflow/**/*
   macosx-x86_64:
     runs-on: macos-latest
     strategy:
@@ -86,75 +78,13 @@ jobs:
           bazel version
           mkdir -p $HOME/.m2
           sed -i .bak -e "s/0.1.0-SNAPSHOT/0.1.0-PELTARION-${{ github.sha }}/"  `find . -name 'pom.xml'`
-          df -h
           mvn clean install -B -U -e -Djavacpp.platform=macosx-x86_64 -Djavacpp.platform.extension=${{ matrix.ext }}
-          # if [[ -z "${{matrix.ext}}" ]]; then
-          #   mvn deploy -B -U -e -Djavacpp.platform=macosx-x86_64 -Djavacpp.platform.extension=${{ matrix.ext }}
-          # else
-          #   mvn deploy -pl tensorflow-core,tensorflow-core-platform${{matrix.ext}} -B -U -e -Djavacpp.platform=macosx-x86_64 -Djavacpp.platform.extension=${{ matrix.ext }}
-          # fi
-          df -h
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
           name: macos-jars${{ matrix.ext }}
           path: /Users/runner/.m2/repository/org/tensorflow/**/*
-  # windows-x86_64:
-  #   runs-on: windows-latest
-  #   strategy:
-  #     matrix:
-  #       ext: ["", -mkl, -gpu, -mkl-gpu]
-  #   steps:
-  #     - name: Configure page file
-  #       uses: al-cheb/configure-pagefile-action@v1.2
-  #     - name: Install environment
-  #       shell: cmd
-  #       run: |
-  #         python -m pip install six
-  #         echo Removing some unused stuff to avoid running out of disk space
-  #         rm.exe -Rf "C:/Program Files (x86)/Android" "C:/Program Files/dotnet" "%CONDA%" "%GOROOT_1_10_X64%" "%GOROOT_1_11_X64%" "%GOROOT_1_12_X64%" "%GOROOT_1_13_X64%" "C:\hostedtoolcache\windows\Ruby" "C:\Rust"
-  #         echo Removing old versions of MSVC that interfere with Bazel
-  #         bash.exe -lc "find 'C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/' -iname '14.1*' -exec rm -Rf {} \;"
-  #         echo Downloading Bazel
-  #         mkdir C:\bazel
-  #         curl.exe -L https://github.com/bazelbuild/bazel/releases/download/2.0.0/bazel-2.0.0-windows-x86_64.exe -o C:/bazel/bazel.exe --retry 10
-  #         echo Installing CUDA
-  #         curl.exe -L http://developer.download.nvidia.com/compute/cuda/10.1/Prod/local_installers/cuda_10.1.243_426.00_windows.exe -o cuda.exe
-  #         curl.exe -L https://developer.download.nvidia.com/compute/redist/cudnn/v7.6.4/cudnn-10.1-windows7-x64-v7.6.4.38.zip -o cudnn.zip
-  #         cuda.exe -s
-  #         mkdir cuda
-  #         unzip.exe cudnn.zip
-  #         cp.exe -a cuda/include cuda/lib cuda/bin "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v10.1/"
-  #         echo %JAVA_HOME%
-  #     - name: Checkout repository
-  #       uses: actions/checkout@v1
-  #     - name: Build project
-  #       shell: cmd
-  #       run: |
-  #         call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" amd64
-  #         set "CUDA_PATH=%ProgramFiles%\NVIDIA GPU Computing Toolkit\CUDA\v10.1"
-  #         set "CUDA_PATH_V10_1=%ProgramFiles%\NVIDIA GPU Computing Toolkit\CUDA\v10.1"
-  #         set "PATH=C:\bazel;%ProgramFiles%\NVIDIA GPU Computing Toolkit\CUDA\v10.1\bin;%ProgramFiles%\NVIDIA GPU Computing Toolkit\CUDA\v10.1\libnvvp;%PATH%"
-  #         echo Shorten work paths to prevent Bazel from reaching MAX_PATH limit
-  #         set "TEST_TMPDIR=C:\tmp"
-  #         set "TMPDIR=C:\tmp"
-  #         set "TEMP=C:\tmp"
-  #         set "TMP=C:\tmp"
-  #         mkdir C:\tmp
-  #         git --version
-  #         cl
-  #         call mvn -version
-  #         bazel version
-  #         mkdir %USERPROFILE%\.m2
-  #         if "${{ github.event_name }}"=="push" (set MAVEN_PHASE=deploy) else (set MAVEN_PHASE=install)
-  #         echo ^<settings^>^<servers^>^<server^>^<id^>ossrh^</id^>^<username^>${{ secrets.CI_DEPLOY_USERNAME }}^</username^>^<password^>${{ secrets.CI_DEPLOY_PASSWORD }}^</password^>^</server^>^</servers^>^</settings^> > %USERPROFILE%\.m2\settings.xml
-  #         df -h
-  #         wmic pagefile list /format:list
-  #         echo Executing Maven %MAVEN_PHASE%
-  #         call mvn clean %MAVEN_PHASE% -Possrh -B -U -e -Djavacpp.platform=windows-x86_64 -Djavacpp.platform.extension=${{ matrix.ext }}
-  #         if ERRORLEVEL 1 exit /b
-  #         df -h
-  #         wmic pagefile list /format:list
+
   # redeploy:
   #   needs: [linux-x86_64, macosx-x86_64]
   #   runs-on: ubuntu-latest
