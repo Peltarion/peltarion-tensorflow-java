@@ -17,15 +17,39 @@
 package org.tensorflow.tools.ndarray.impl.dense;
 
 import org.tensorflow.tools.buffer.DataBuffer;
-import org.tensorflow.tools.ndarray.IllegalRankException;
+import org.tensorflow.tools.buffer.DataBufferWindow;
 import org.tensorflow.tools.ndarray.NdArray;
+import org.tensorflow.tools.ndarray.NdArraySequence;
 import org.tensorflow.tools.ndarray.impl.AbstractNdArray;
 import org.tensorflow.tools.ndarray.impl.dimension.DimensionalSpace;
 import org.tensorflow.tools.ndarray.impl.dimension.RelativeDimensionalSpace;
+import org.tensorflow.tools.ndarray.impl.sequence.SlicingElementSequence;
+import org.tensorflow.tools.ndarray.impl.sequence.SingleElementSequence;
+import org.tensorflow.tools.ndarray.impl.sequence.FastElementSequence;
 import org.tensorflow.tools.ndarray.index.Index;
 
 @SuppressWarnings("unchecked")
 public abstract class AbstractDenseNdArray<T, U extends NdArray<T>> extends AbstractNdArray<T, U> {
+
+  @Override
+  public NdArraySequence<U> elements(int dimensionIdx) {
+    if (dimensionIdx >= shape().numDimensions()) {
+      throw new IllegalArgumentException("Cannot iterate elements in dimension '" + dimensionIdx +
+          "' of array with shape " + shape());
+    }
+    if (rank() == 0 && dimensionIdx < 0) {
+      return new SingleElementSequence<>(this);
+    }
+    DimensionalSpace elemDims = dimensions().from(dimensionIdx + 1);
+    try {
+      DataBufferWindow<? extends DataBuffer<T>> elemWindow = buffer().window(elemDims.physicalSize());
+      U element = instantiate(elemWindow.buffer(), elemDims);
+      return new FastElementSequence(this, dimensionIdx, element, elemWindow);
+    } catch (UnsupportedOperationException e) {
+      // If buffer windows are not supported, fallback to slicing (and slower) sequence
+      return new SlicingElementSequence<>(this, dimensionIdx, elemDims);
+    }
+  }
 
   @Override
   public U slice(long position, DimensionalSpace sliceDimensions) {
@@ -120,13 +144,8 @@ public abstract class AbstractDenseNdArray<T, U extends NdArray<T>> extends Abst
     if (coords == null || coords.length == 0) {
       return 0;
     }
-    if (coords.length > dimensions().numDimensions()) {
-      throw new IndexOutOfBoundsException();
-    }
-    if (isValue && coords.length != dimensions().numDimensions()) {
-      throw new IllegalRankException("Not a scalar value");
-    }
-    return dimensions().positionOf(coords);
+    Validator.coordinates(dimensions, coords, isValue);
+    return dimensions.positionOf(coords);
   }
 
   @Override

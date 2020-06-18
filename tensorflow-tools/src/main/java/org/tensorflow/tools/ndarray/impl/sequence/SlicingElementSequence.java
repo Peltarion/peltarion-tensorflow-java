@@ -24,18 +24,26 @@ import org.tensorflow.tools.ndarray.NdArraySequence;
 import org.tensorflow.tools.ndarray.impl.AbstractNdArray;
 import org.tensorflow.tools.ndarray.impl.dimension.DimensionalSpace;
 
-public class ElementSequence<T, U extends NdArray<T>> implements NdArraySequence<U> {
+/**
+ * A sequence creating a new {@code NdArray} instance (slice) for each element of an iteration
+ *
+ * @param <T> Type of the element
+ * @param <U> Type of the {@code NdArray} with this sequence
+ */
+public final class SlicingElementSequence<T, U extends NdArray<T>> implements NdArraySequence<U> {
 
-  public static <T, U extends NdArray<T>> NdArraySequence<U> create(AbstractNdArray<T, U> ndArray, int dimensionIdx) {
-    if (ndArray.rank() == 0 && dimensionIdx < 0) {
-      return new SingleElementSequence<>(ndArray);
-    }
-    return new ElementSequence<>(ndArray, dimensionIdx);
+  public SlicingElementSequence(AbstractNdArray<T, U> ndArray, int dimensionIdx) {
+    this(ndArray, dimensionIdx, ndArray.dimensions().from(dimensionIdx + 1));
+  }
+
+  public SlicingElementSequence(AbstractNdArray<T, U> ndArray, int dimensionIdx, DimensionalSpace elementDimensions) {
+    this.ndArray = ndArray;
+    this.dimensionIdx = dimensionIdx;
+    this.elementDimensions = elementDimensions;
   }
 
   @Override
   public Iterator<U> iterator() {
-    DimensionalSpace elementDimensions = ndArray.dimensions().from(dimensionIdx + 1);
     PositionIterator positionIterator = PositionIterator.create(ndArray.dimensions(), dimensionIdx);
     return new Iterator<U>() {
 
@@ -53,17 +61,17 @@ public class ElementSequence<T, U extends NdArray<T>> implements NdArraySequence
 
   @Override
   public void forEachIndexed(BiConsumer<long[], U> consumer) {
-    DimensionalSpace elementDimensions = ndArray.dimensions().from(dimensionIdx + 1);
     PositionIterator.createIndexed(ndArray.dimensions(), dimensionIdx).forEachIndexed((long[] coords, long position) ->
         consumer.accept(coords, ndArray.slice(position, elementDimensions))
     );
   }
 
-  private ElementSequence(AbstractNdArray<T, U> ndArray, int dimensionIdx) {
-    this.ndArray = ndArray;
-    this.dimensionIdx = dimensionIdx;
+  @Override
+  public NdArraySequence<U> asSlices() {
+    return this;
   }
 
   private final AbstractNdArray<T, U> ndArray;
   private final int dimensionIdx;
+  private final DimensionalSpace elementDimensions;
 }

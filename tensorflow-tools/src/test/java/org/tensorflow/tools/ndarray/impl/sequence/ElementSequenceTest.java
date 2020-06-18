@@ -19,12 +19,16 @@ package org.tensorflow.tools.ndarray.impl.sequence;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.Test;
 import org.tensorflow.tools.Shape;
+import org.tensorflow.tools.buffer.DataBufferWindow;
+import org.tensorflow.tools.buffer.DataBuffers;
+import org.tensorflow.tools.buffer.IntDataBuffer;
 import org.tensorflow.tools.ndarray.IntNdArray;
 import org.tensorflow.tools.ndarray.NdArraySequence;
 import org.tensorflow.tools.ndarray.NdArrays;
@@ -36,9 +40,8 @@ public class ElementSequenceTest {
   public void iterateVectorsWithIndex() {
     IntNdArray array = NdArrays.ofInts(Shape.of(2, 3, 2));
 
-    @SuppressWarnings("unchecked")
-    NdArraySequence<IntNdArray> sequence = ElementSequence
-        .create((AbstractNdArray<Integer, IntNdArray>)array, 1);
+    NdArraySequence<IntNdArray> sequence = new SlicingElementSequence(
+        (AbstractNdArray<Integer, IntNdArray>)array, 1);
     List<long[]> coords = new ArrayList<>((int)array.shape().size());
     sequence.forEachIndexed((c, e) -> coords.add(Arrays.copyOf(c, c.length)));
 
@@ -55,8 +58,8 @@ public class ElementSequenceTest {
   public void iterateScalarsWithIndex() {
     IntNdArray array = NdArrays.ofInts(Shape.of(2, 3, 2));
 
-    @SuppressWarnings("unchecked")
-    NdArraySequence<IntNdArray> cursor = ElementSequence.create((AbstractNdArray<Integer, IntNdArray>)array, 2);
+    NdArraySequence<IntNdArray> cursor = new SlicingElementSequence(
+        (AbstractNdArray<Integer, IntNdArray>)array, 2);
     List<long[]> coords = new ArrayList<>((int)array.shape().size());
     cursor.forEachIndexed((c, e) -> coords.add(Arrays.copyOf(c, c.length)));
 
@@ -73,5 +76,70 @@ public class ElementSequenceTest {
     assertArrayEquals(new long[] {1, 1, 1}, coords.get(9));
     assertArrayEquals(new long[] {1, 2, 0}, coords.get(10));
     assertArrayEquals(new long[] {1, 2, 1}, coords.get(11));
+  }
+
+  @Test
+  public void slicingElementSequenceReturnsUniqueInstances() {
+    IntNdArray array = NdArrays.ofInts(Shape.of(2, 3, 2));
+    NdArraySequence<IntNdArray> sequence = new SlicingElementSequence(
+        (AbstractNdArray<Integer, IntNdArray>) array, 1);
+    List<IntNdArray> elements = new ArrayList<>();
+    sequence.forEach(e -> {
+      elements.forEach(tmp -> {
+        if (tmp == e) {
+          fail();
+        }
+      });
+      elements.add(e);
+    });
+  }
+
+  @Test
+  public void fastElementSequenceReturnsSameInstance() {
+    IntNdArray array = NdArrays.ofInts(Shape.of(2, 3, 2));
+    IntNdArray element = array.get(0);
+    NdArraySequence<IntNdArray> sequence = new FastElementSequence(
+        (AbstractNdArray<Integer, IntNdArray>) array, 1, element, mockDataBufferWindow(2));
+    sequence.forEach(e -> {
+      if (e != element) {
+        fail();
+      }
+    });
+  }
+
+  private DataBufferWindow<IntDataBuffer> mockDataBufferWindow(long size) {
+    return new DataBufferWindow<IntDataBuffer>() {
+
+      @Override
+      public long offset() {
+        return offset;
+      }
+
+      @Override
+      public long size() {
+        return size;
+      }
+
+      @Override
+      public DataBufferWindow<IntDataBuffer> slideTo(long index) {
+        offset = index;
+        return this;
+      }
+
+      @Override
+      public DataBufferWindow<IntDataBuffer> slide(long step) {
+        offset += step;
+        return this;
+      }
+
+      @Override
+      public IntDataBuffer buffer() {
+        return buffer;
+      }
+
+      private long offset;
+      private final long size = 2;
+      private final IntDataBuffer buffer = DataBuffers.ofInts(2);
+    };
   }
 }

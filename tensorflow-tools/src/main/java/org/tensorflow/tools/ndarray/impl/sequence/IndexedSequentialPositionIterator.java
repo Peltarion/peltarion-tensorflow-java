@@ -25,16 +25,27 @@ class IndexedSequentialPositionIterator extends SequentialPositionIterator imple
   public void forEachIndexed(CoordsLongConsumer consumer) {
     while (hasNext()) {
       consumer.consume(coords, nextLong());
-      NdPositionIterator.increment(coords, dimensions);
+      incrementCoords();
+    }
+  }
+
+  private void incrementCoords() {
+    for (int i = coords.length - 1; i >= 0; --i) {
+      if (coords[i] < shape[i] - 1) {
+        coords[i] += 1L;
+        return;
+      }
+      coords[i] = 0L;
     }
   }
 
   IndexedSequentialPositionIterator(DimensionalSpace dimensions, int dimensionIdx) {
     super(dimensions, dimensionIdx);
-    this.dimensions = dimensions;
+    this.shape = dimensions.shape().asArray();
     this.coords = new long[dimensionIdx + 1];
+    //this.coordsIncrementor = new CoordinatesIncrementor(dimensions.shape().asArray(), dimensionIdx);
   }
 
-  private final DimensionalSpace dimensions;
+  private final long[] shape;
   private final long[] coords;
 }

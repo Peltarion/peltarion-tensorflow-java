@@ -24,7 +24,17 @@ import org.tensorflow.tools.ndarray.NdArray;
 import org.tensorflow.tools.ndarray.NdArraySequence;
 import org.tensorflow.tools.ndarray.impl.AbstractNdArray;
 
-class SingleElementSequence<T, U extends NdArray<T>> implements NdArraySequence<U> {
+/**
+ * A sequence of one single element
+ *
+ * @param <T> Type of the element
+ * @param <U> Type of the {@code NdArray} with this sequence
+ */
+public final class SingleElementSequence<T, U extends NdArray<T>> implements NdArraySequence<U> {
+
+  public SingleElementSequence(AbstractNdArray<T, U> ndArray) {
+    this.ndArray = ndArray;
+  }
 
   @Override
   public Iterator<U> iterator() {
@@ -48,12 +58,13 @@ class SingleElementSequence<T, U extends NdArray<T>> implements NdArraySequence<
   }
 
   @Override
-  public void forEachIndexed(BiConsumer<long[], U> consumer) {
-    throw new IllegalRankException("Single element has no coordinates to iterate on, use forEach()");
+  public NdArraySequence<U> asSlices() {
+    return this;  // no need to slice, as there are only one element
   }
 
-  SingleElementSequence(AbstractNdArray<T, U> ndArray) {
-    this.ndArray = ndArray;
+  @Override
+  public void forEachIndexed(BiConsumer<long[], U> consumer) {
+    throw new IllegalRankException("Single element has no coordinates to iterate on, use forEach()");
   }
 
   private final AbstractNdArray<T, U> ndArray;
