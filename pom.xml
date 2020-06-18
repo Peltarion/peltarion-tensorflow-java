@@ -5,7 +5,7 @@
 
   <groupId>org.tensorflow</groupId>
   <artifactId>tensorflow-java</artifactId>
-  <version>0.1.0-peltarion-1</version>
+  <version>0.1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>TensorFlow Java Parent</name>
@@ -45,27 +45,11 @@
 
   <repositories>
       <repository>
-          <id>nexus</id>
-          <url>https://nexus.plattan.fi/repository/maven-public/</url>
-      </repository>
-      <repository>
-          <id>nexus-snapshot</id>
-          <url>https://nexus.plattan.fi/repository/maven-snapshots/</url>
+          <id>github</id>
+          <name>GitHub Peltarion Apache Maven Packages</name>
+          <url>https://maven.pkg.github.com/Peltarion/peltarion-tensorflow-java</url>
       </repository>
   </repositories>
-
-  <distributionManagement>
-      <snapshotRepository>
-          <id>nexus-snapshots</id>
-          <name>Snapshot Repository</name>
-          <url>https://nexus.plattan.fi/repository/maven-snapshots/</url>
-      </snapshotRepository>
-      <repository>
-          <id>nexus</id>
-          <name>Release Repository</name>
-          <url>https://nexus.plattan.fi/repository/maven-releases/</url>
-      </repository>
-  </distributionManagement>
 
   <dependencyManagement>
     <dependencies>
@@ -88,6 +72,13 @@
 	  </dependency>
     </dependencies>
   </dependencyManagement>
+
+  <distributionManagement>
+    <repository>
+      <id>github</id>
+      <url>https://maven.pkg.github.com/Peltarion/peltarion-tensorflow-java</url>
+    </repository>
+  </distributionManagement>
 
   <!-- http://central.sonatype.org/pages/requirements.html#developer-information -->
   <developers>
@@ -118,6 +109,11 @@
     </plugins>
     <pluginManagement>
       <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-deploy-plugin</artifactId>
+          <version>3.0.0-M1</version>
+        </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jar-plugin</artifactId>
