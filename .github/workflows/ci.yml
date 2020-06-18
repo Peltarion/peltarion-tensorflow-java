@@ -2,10 +2,10 @@ name: CI jobs
 on:
   push:
     branches:
-      - master
+      - peltarion
   pull_request:
     branches:
-      - master
+      - peltarion
 
 jobs:
   linux-x86_64:
