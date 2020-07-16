@@ -48,6 +48,7 @@ jobs:
         run: |
           curl -L https://github.com/tensorflow/text/archive/v2.2.1.tar.gz -o tensorflow-text-v2.2.1.tar.gz
           tar xzf tensorflow-text-v2.2.1.tar.gz
+          chmod -R +x ./text-2.2.1/oss_scripts
           ./text-2.2.1/oss_scripts/run_build.sh
       - name: Upload artifact
         uses:  actions/upload-artifact@v2
@@ -88,6 +89,7 @@ jobs:
         run: |
           curl -L https://github.com/tensorflow/text/archive/v2.2.1.tar.gz -o tensorflow-text-v2.2.1.tar.gz
           tar xzf tensorflow-text-v2.2.1.tar.gz
+          chmod -R +x ./text-2.2.1/oss_scripts
           ./text-2.2.1/oss_scripts/run_build.sh
       - name: Upload artifact
         uses: actions/upload-artifact@v2
