@@ -57,9 +57,10 @@ jobs:
             zlib1g-dev
 
 
+          pip3 --no-cache-dir install setuptools
+
           ln -s $(which python3) /usr/local/bin/python
           pip3 --no-cache-dir install \
-            setuptools \
             Pillow \
             h5py \
             keras_preprocessing \
