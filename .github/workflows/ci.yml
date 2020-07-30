@@ -18,14 +18,11 @@ jobs:
       - name: Install environment
         run: |
           apt-get update
-          apt-get -y install openjdk-8-jdk git patch python3.6-dev python3-six
+          apt-get -y install openjdk-8-jdk git patch
           echo Downloading Maven
           curl -L https://archive.apache.org/dist/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz -o $HOME/apache-maven-3.6.3-bin.tar.gz
           tar xzf $HOME/apache-maven-3.6.3-bin.tar.gz -C /opt/
           ln -sf /opt/apache-maven-3.6.3/bin/mvn /usr/bin/mvn
-          echo Downloading Bazel
-          curl -L https://github.com/bazelbuild/bazel/releases/download/2.0.0/bazel-2.0.0-installer-linux-x86_64.sh -o bazel.sh --retry 10
-          bash bazel.sh
       - name: Checkout repository
         uses: actions/checkout@v1
       - name: Setup Java
