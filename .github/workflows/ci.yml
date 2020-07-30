@@ -18,7 +18,7 @@ jobs:
       - name: Install environment
         run: |
           apt-get update
-          apt-get -y install openjdk-8-jdk devtoolset-7 git patch python3.6-dev python3-six
+          apt-get -y install openjdk-8-jdk git patch python3.6-dev python3-six
           echo Downloading Maven
           curl -L https://archive.apache.org/dist/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz -o $HOME/apache-maven-3.6.3-bin.tar.gz
           tar xzf $HOME/apache-maven-3.6.3-bin.tar.gz -C /opt/
