@@ -10,16 +10,15 @@ on:
 jobs:
   linux-x86_64:
     runs-on: ubuntu-latest
-    container: nvidia/cuda:10.1-cudnn7-devel-centos7
+    container: tensorflow/tensorflow:devel-gpu
     strategy:
       matrix:
         ext: ["", -mkl, -gpu, -mkl-gpu]
     steps:
       - name: Install environment
         run: |
-          yum -y update
-          yum -y install centos-release-scl-rh epel-release
-          yum -y install java-1.8.0-openjdk-devel devtoolset-7 rh-git218 patch python36-devel python36-pip python36-six
+          apt-get update
+          apt-get -y install openjdk-8-jdk devtoolset-7 git patch python3.6-dev python3-six
           echo Downloading Maven
           curl -L https://archive.apache.org/dist/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz -o $HOME/apache-maven-3.6.3-bin.tar.gz
           tar xzf $HOME/apache-maven-3.6.3-bin.tar.gz -C /opt/
@@ -37,7 +36,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          source scl_source enable devtoolset-7 rh-git218 || true
           git --version
           gcc --version
           mvn -version
