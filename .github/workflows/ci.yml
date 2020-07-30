@@ -16,6 +16,7 @@ jobs:
         ext: ["", -mkl, -gpu, -mkl-gpu]
     steps:
       - name: Install environment
+        shell: bash
         run: |
           CUDA=10.1
           CUDNN=7.6.4.38-1
