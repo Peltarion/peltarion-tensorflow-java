@@ -39,7 +39,7 @@ jobs:
             libcudnn7=${CUDNN}+cuda${CUDA} \
             libcurl3-dev \
             libfreetype6-dev \
-            libiomp5-dev \
+            libiomp5 \
             libhdf5-serial-dev \
             libzmq3-dev \
             openjdk-8-jdk \
