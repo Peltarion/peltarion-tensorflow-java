@@ -48,8 +48,8 @@ import org.bytedeco.javacpp.tools.InfoMapper;
                 "tensorflow/c/ops.h",
                 "tensorflow/c/eager/c_api.h"
             },
-            link = "tensorflow@.2",
-            preload = {"iomp5", "mklml", "mklml_intel", "tensorflow_framework@.2"},
+            link = "tensorflow_framework@.2",
+            preload = {"iomp5", "mklml", "mklml_intel", "tensorflow@.2"},
             preloadresource = "/org/bytedeco/mkldnn/",
             resource = {"LICENSE", "THIRD_PARTY_TF_JNI_LICENSES"}
         ),
