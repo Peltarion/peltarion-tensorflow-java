@@ -1,0 +1,21 @@
+diff --git a/tensorflow/c/version_script.lds b/tensorflow/c/version_script.lds
+index c352a1440d..7716dcb231 100644
+--- a/tensorflow/c/version_script.lds
++++ b/tensorflow/c/version_script.lds
+@@ -1,8 +1,16 @@
+ VERS_1.0 {
+   # Export symbols in c_api.h.
+   global:
++  *tensorflow*;
++    *toco*;
++    *perftools*gputools*;
++    *tf_*;
+     *TF_*;
++    *Eager*;
+     *TFE_*;
++    *nsync_*;
++    *stream_executor*;
++    *xla*;
+
+   # Hide everything else.
+   local:

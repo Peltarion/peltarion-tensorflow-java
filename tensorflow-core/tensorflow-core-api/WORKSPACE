@@ -11,6 +11,7 @@ http_archive(
         ":tensorflow-visibility.patch",
         ":tensorflow-windows.patch", # https://github.com/tensorflow/tensorflow/issues/25213
         ":tensorflow-proto.patch",
+        ":tensorflow-c-external-symbols.patch",
     ],
     patch_tool = "patch",
     patch_args = ["-p1"],
