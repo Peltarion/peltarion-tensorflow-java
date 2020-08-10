@@ -24,12 +24,12 @@ import org.tensorflow.Operand;
 import org.tensorflow.Operation;
 import org.tensorflow.OperationBuilder;
 import org.tensorflow.Output;
+import org.tensorflow.ndarray.Shape;
 import org.tensorflow.op.Operands;
 import org.tensorflow.op.RawOp;
 import org.tensorflow.op.Scope;
 import org.tensorflow.op.annotation.Endpoint;
 import org.tensorflow.op.annotation.Operator;
-import org.tensorflow.tools.Shape;
 import org.tensorflow.types.TBool;
 import org.tensorflow.types.TInt64;
 import org.tensorflow.types.TString;
@@ -125,7 +125,7 @@ public final class ParseSequenceExample extends RawOp {
    * @param featureListDenseKeys The keys expected in the SequenceExamples' feature_lists associated
    * with lists of dense values.
    * @param featureListRaggedKeys The keys expected in the FeatureLists associated with ragged values.
-   * @param featureListDenseMissingAssumedEmpty A vector corresponding 1:1 with featue_list_dense_keys, indicating which
+   * @param featureListDenseMissingAssumedEmpty A vector corresponding 1:1 with feature_list_dense_keys, indicating which
    * features may be missing from the SequenceExamples.  If the associated
    * FeatureList is missing, it is treated as empty.
    * @param contextDenseDefaults A list of Ncontext_dense Tensors (some may be empty).

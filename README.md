@@ -38,8 +38,9 @@ The following describes the layout of the repository and its different artifacts
   * High-level APIs built on top of the core libraries to simplify neural network training and inference 
     using TensorFlow.
   
-* `tensorflow-tools`
-  * Utility libraries that do not depend on the TensorFlow runtime but are useful for machine learning purposes.
+* `ndarray`
+  * Generic utility library for n-dimensional data I/O operations. It is used by TensorFlow without depending
+    on it, making its usage eligible to any type of projects, using TensorFlow or not.
   
 ## Building Sources
 
@@ -48,11 +49,19 @@ the Maven command of your choice). It is also possible to build artifacts with s
 `mvn install -Djavacpp.platform.extension=-mkl` or CUDA with `mvn install -Djavacpp.platform.extension=-gpu`
 or both with `mvn install -Djavacpp.platform.extension=-mkl-gpu`.
 
-Note that in some cases, if a version of the TensorFlow runtime library is not found for your environment,
-this process will fetch TensorFlow sources and trigger a build of all the native code (which can take
-many hours on a standard laptop). In this case, you will also need to have a valid environment for building
-TensorFlow, including the [bazel](https://bazel.build/) build tool and a few python dependencies. Please
-read [TensorFlow documentation](https://www.tensorflow.org/install/source) for more details.
+When building this project for the first time in a given workspace, the script will attempt to download
+the [TensorFlow runtime library sources](https://github.com/tensorflow/tensorflow) and build of all the native code
+for your platform. This requires a valid environment for building TensorFlow, including the [bazel](https://bazel.build/)
+build tool and a few Python dependencies (please read [TensorFlow documentation](https://www.tensorflow.org/install/source)
+for more details).
+
+This step can take multiple hours on a regular laptop. It is possible though to skip completely the native build if you are
+working on a version that already has pre-compiled native artifacts for your platform [available on Sonatype OSS Nexus repository](#Snapshots).
+You just need to activate the `dev` profile in your Maven command to use those artifacts instead of building them from scratch
+(e.g. `mvn install -Pdev`).
+
+Note that modifying any source files under `tensorflow-core` may impact the low-level TensorFlow bindings, in which case a
+complete build could be required to reflect the changes.
 
 ## Using Maven Artifacts
 
@@ -69,12 +78,12 @@ systems, you should add the following dependencies:
 <dependency>
   <groupId>org.tensorflow</groupId>
   <artifactId>tensorflow-core-api</artifactId>
-  <version>0.1.0-SNAPSHOT</version>
+  <version>0.2.0-SNAPSHOT</version>
 </dependency>
 <dependency>
   <groupId>org.tensorflow</groupId>
   <artifactId>tensorflow-core-api</artifactId>
-  <version>0.1.0-SNAPSHOT</version>
+  <version>0.2.0-SNAPSHOT</version>
   <classifier>linux-x86_64${javacpp.platform.extension}</classifier>
 </dependency>
 ```
@@ -85,24 +94,24 @@ native dependencies as follows:
 <dependency>
   <groupId>org.tensorflow</groupId>
   <artifactId>tensorflow-core-api</artifactId>
-  <version>0.1.0-SNAPSHOT</version>
+  <version>0.2.0-SNAPSHOT</version>
 </dependency>
 <dependency>
   <groupId>org.tensorflow</groupId>
   <artifactId>tensorflow-core-api</artifactId>
-  <version>0.1.0-SNAPSHOT</version>
+  <version>0.2.0-SNAPSHOT</version>
   <classifier>linux-x86_64${javacpp.platform.extension}</classifier>
 </dependency>
 <dependency>
   <groupId>org.tensorflow</groupId>
   <artifactId>tensorflow-core-api</artifactId>
-  <version>0.1.0-SNAPSHOT</version>
+  <version>0.2.0-SNAPSHOT</version>
   <classifier>macosx-x86_64${javacpp.platform.extension}</classifier>
 </dependency>
 <dependency>
   <groupId>org.tensorflow</groupId>
   <artifactId>tensorflow-core-api</artifactId>
-  <version>0.1.0-SNAPSHOT</version>
+  <version>0.2.0-SNAPSHOT</version>
   <classifier>windows-x86_64${javacpp.platform.extension}</classifier>
 </dependency>
 ```
@@ -115,7 +124,7 @@ artifact includes transitively all the artifacts above as a single dependency:
 <dependency>
   <groupId>org.tensorflow</groupId>
   <artifactId>tensorflow-core-platform${javacpp.platform.extension}</artifactId>
-  <version>0.1.0-SNAPSHOT</version>
+  <version>0.2.0-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -145,7 +154,7 @@ to add Sonatype OSS repository in your pom.xml, like the following
     <dependency>
         <groupId>org.tensorflow</groupId>
         <artifactId>tensorflow-core-platform</artifactId>
-        <version>0.1.0-SNAPSHOT</version>
+        <version>0.2.0-SNAPSHOT</version>
     </dependency>
 </dependencies>
 ```
@@ -157,6 +166,7 @@ This table shows the mapping between different version of TensorFlow for Java an
 | TensorFlow Java Version  | TensorFlow Version |
 | ------------- | ------------- |
 | 0.1.0-SNAPSHOT  | 2.2.0  |
+| 0.2.0-SNAPSHOT  | 2.3.0  |
 
 ## How to Contribute?
 

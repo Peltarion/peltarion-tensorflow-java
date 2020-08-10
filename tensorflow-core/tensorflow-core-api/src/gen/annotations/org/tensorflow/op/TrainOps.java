@@ -20,6 +20,7 @@ package org.tensorflow.op;
 import java.util.List;
 import org.tensorflow.DataType;
 import org.tensorflow.Operand;
+import org.tensorflow.ndarray.Shape;
 import org.tensorflow.op.train.AccumulatorApplyGradient;
 import org.tensorflow.op.train.AccumulatorNumAccumulated;
 import org.tensorflow.op.train.AccumulatorSetGlobalStep;
@@ -82,7 +83,6 @@ import org.tensorflow.op.train.SparseApplyProximalAdagrad;
 import org.tensorflow.op.train.SparseApplyProximalGradientDescent;
 import org.tensorflow.op.train.SparseApplyRmsProp;
 import org.tensorflow.op.train.TileGrad;
-import org.tensorflow.tools.Shape;
 import org.tensorflow.types.TFloat32;
 import org.tensorflow.types.TInt32;
 import org.tensorflow.types.TInt64;
@@ -327,8 +327,8 @@ public final class TrainOps {
    * Update '*var' according to the Ftrl-proximal scheme.
    *  <p>
    *  grad_with_shrinkage = grad + 2 * l2_shrinkage * var
-   *  accum_new = accum + grad_with_shrinkage * grad_with_shrinkage
-   *  linear += grad_with_shrinkage +
+   *  accum_new = accum + grad * grad
+   *  linear += grad_with_shrinkage -
    *      (accum_new^(-lr_power) - accum^(-lr_power)) / lr * var
    *  quadratic = 1.0 / (accum_new^(lr_power) * lr) + 2 * l2
    *  var = (sign(linear) * l1 - linear) / quadratic if |linear| > l1 else 0.0
@@ -886,9 +886,9 @@ public final class TrainOps {
   }
 
   /**
-   * Update '*var' according to the momentum scheme. Set use_nesterov = True if you
+   * Update '*var' according to the momentum scheme.
    *  <p>
-   *  want to use Nesterov momentum.
+   *  Set use_nesterov = True if you want to use Nesterov momentum.
    *  <p>
    *  accum = accum * momentum + grad
    *  var -= lr * accum
@@ -1506,8 +1506,8 @@ public final class TrainOps {
    *  <p>
    *  That is for rows we have grad for, we update var, accum and linear as follows:
    *  grad_with_shrinkage = grad + 2 * l2_shrinkage * var
-   *  accum_new = accum + grad_with_shrinkage * grad_with_shrinkage
-   *  linear += grad_with_shrinkage +
+   *  accum_new = accum + grad * grad
+   *  linear += grad_with_shrinkage -
    *      (accum_new^(-lr_power) - accum^(-lr_power)) / lr * var
    *  quadratic = 1.0 / (accum_new^(lr_power) * lr) + 2 * l2
    *  var = (sign(linear) * l1 - linear) / quadratic if |linear| > l1 else 0.0

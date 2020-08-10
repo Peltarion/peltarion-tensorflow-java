@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.tensorflow</groupId>
     <artifactId>tensorflow-core</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>0.2.0-SNAPSHOT</version>
   </parent>
   <artifactId>tensorflow-core-api</artifactId>
   <packaging>jar</packaging>
@@ -45,17 +45,28 @@
     </dependency>
     <dependency>
       <groupId>org.tensorflow</groupId>
-      <artifactId>tensorflow-tools</artifactId>
+      <artifactId>ndarray</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <scope>test</scope>
+      <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter-api</artifactId>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter-engine</artifactId>
+        <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.openjdk.jmh</groupId>
       <artifactId>jmh-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.truth</groupId>
+      <artifactId>truth</artifactId>
+      <version>1.0.1</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -64,6 +75,33 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+
+  <profiles>
+    <!--
+    Dev Profile
+      This profile skips the native libraries build and other resource-consuming tasks for local
+      development. Note that any changes to the code that may impact low-level bindings with
+      the TensorFlow runtime library will require a complete build, in which case this profile
+      cannot be used.
+    -->
+    <profile>
+      <id>dev</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.tensorflow</groupId>
+          <artifactId>tensorflow-core-api</artifactId>
+          <version>${project.version}</version>
+          <classifier>${native.classifier}</classifier>
+        </dependency>
+      </dependencies>
+      <properties>
+        <javacpp.build.skip>true</javacpp.build.skip>
+        <javacpp.parser.skip>true</javacpp.parser.skip>
+        <javacpp.compiler.skip>true</javacpp.compiler.skip>
+        <maven.javadoc.skip>true</maven.javadoc.skip>
+      </properties>
+    </profile>
+  </profiles>
 
   <build>
     <plugins>
@@ -287,7 +325,7 @@
             <configuration>
               <classifier>${native.classifier}</classifier>
               <skipIfEmpty>true</skipIfEmpty>
-              <includes> 
+              <includes>
                 <!-- In case of successive builds for multiple platforms without cleaning, ensures
                      we only include files for this platform. -->
                 <include>org/tensorflow/internal/c_api/${native.classifier}/</include>
@@ -318,9 +356,6 @@
             -Djava.library.path=${project.build.directory}/native/org/tensorflow/internal/c_api/${native.classifier}
           </argLine>
           <additionalClasspathElements>${project.build.directory}/native/</additionalClasspathElements>
-          <systemPropertyVariables>
-            <NATIVE_PLATFORM>${javacpp.platform}</NATIVE_PLATFORM>
-          </systemPropertyVariables>
         </configuration>
       </plugin>
       <plugin>

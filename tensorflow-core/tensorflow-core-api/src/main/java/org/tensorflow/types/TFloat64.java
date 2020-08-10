@@ -23,12 +23,12 @@ import org.tensorflow.Tensor;
 import org.tensorflow.exceptions.TensorFlowException;
 import org.tensorflow.internal.buffer.TensorBuffers;
 import org.tensorflow.internal.c_api.TF_Tensor;
-import org.tensorflow.tools.Shape;
-import org.tensorflow.tools.buffer.DoubleDataBuffer;
-import org.tensorflow.tools.ndarray.DoubleNdArray;
-import org.tensorflow.tools.ndarray.NdArray;
-import org.tensorflow.tools.ndarray.StdArrays;
-import org.tensorflow.tools.ndarray.impl.dense.DoubleDenseNdArray;
+import org.tensorflow.ndarray.Shape;
+import org.tensorflow.ndarray.buffer.DoubleDataBuffer;
+import org.tensorflow.ndarray.DoubleNdArray;
+import org.tensorflow.ndarray.NdArray;
+import org.tensorflow.ndarray.StdArrays;
+import org.tensorflow.ndarray.impl.dense.DoubleDenseNdArray;
 import org.tensorflow.types.family.TNumber;
 
 /**
@@ -59,7 +59,7 @@ public interface TFloat64 extends DoubleNdArray, TNumber {
     if (values == null) {
       throw new IllegalArgumentException();
     }
-    return Tensor.of(DTYPE, Shape.of(values.length), data -> StdArrays.copyTo(data, values));
+    return Tensor.of(DTYPE, Shape.of(values.length), data -> StdArrays.copyTo(values, data));
   }
 
   /**

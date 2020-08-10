@@ -20,6 +20,7 @@ package org.tensorflow.op;
 import java.util.List;
 import org.tensorflow.DataType;
 import org.tensorflow.Operand;
+import org.tensorflow.ndarray.Shape;
 import org.tensorflow.op.io.DecodeBase64;
 import org.tensorflow.op.io.DecodeCompressed;
 import org.tensorflow.op.io.DecodeCsv;
@@ -66,7 +67,6 @@ import org.tensorflow.op.io.TextLineReader;
 import org.tensorflow.op.io.TfRecordReader;
 import org.tensorflow.op.io.WholeFileReader;
 import org.tensorflow.op.io.WriteFile;
-import org.tensorflow.tools.Shape;
 import org.tensorflow.types.TBool;
 import org.tensorflow.types.TInt32;
 import org.tensorflow.types.TInt64;
@@ -419,7 +419,7 @@ public final class IoOps {
    * @param featureListDenseKeys The keys expected in the SequenceExamples' feature_lists associated
    *  with lists of dense values.
    * @param featureListRaggedKeys The keys expected in the FeatureLists associated with ragged values.
-   * @param featureListDenseMissingAssumedEmpty A vector corresponding 1:1 with featue_list_dense_keys, indicating which
+   * @param featureListDenseMissingAssumedEmpty A vector corresponding 1:1 with feature_list_dense_keys, indicating which
    *  features may be missing from the SequenceExamples.  If the associated
    *  FeatureList is missing, it is treated as empty.
    * @param contextDenseDefaults A list of Ncontext_dense Tensors (some may be empty).

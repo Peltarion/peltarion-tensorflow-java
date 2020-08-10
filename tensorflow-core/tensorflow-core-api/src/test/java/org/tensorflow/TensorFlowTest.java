@@ -15,23 +15,21 @@ limitations under the License.
 
 package org.tensorflow;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.junit.Assume.assumeFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
+import java.io.File;
 import java.nio.file.Paths;
 
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
+import org.junit.jupiter.api.Test;
 import org.tensorflow.proto.framework.OpList;
 
 /** Unit tests for {@link org.tensorflow.TensorFlow}. */
-@RunWith(JUnit4.class)
 public class TensorFlowTest {
+    
   @Test
   public void version() {
     assertTrue(TensorFlow.version().length() > 0);
@@ -44,9 +42,11 @@ public class TensorFlowTest {
 
   @Test
   public void loadLibrary() {
-    // FIXME(karllessard) Custom ops libraries are not supported on Windows since TF is built monolithic
-    // Once we are able to lift this restriction, enable this test
-    disableOnPlatform("windows");
+    File customOpLibrary = Paths.get("").resolve("bazel-bin/libcustom_ops_test.so").toFile();
+
+    // Disable this test if the custom op library is not available. This may happen on some
+    // platforms (e.g. Windows) or when using a development profile that skips the native build
+    assumeTrue(customOpLibrary.exists());
 
     try (Graph g = new Graph()) {
       // Build a graph with an unrecognized operation.
@@ -58,7 +58,7 @@ public class TensorFlowTest {
       }
 
       // Load the library containing the operation.
-      OpList opList = TensorFlow.loadLibrary(Paths.get("").resolve("bazel-bin/libcustom_ops_test.so").toString());
+      OpList opList = TensorFlow.loadLibrary(customOpLibrary.getAbsolutePath());
       assertNotNull(opList);
       assertEquals(1, opList.getOpCount());
       assertEquals(opList.getOpList().get(0).getName(), "MyTest");
@@ -66,10 +66,5 @@ public class TensorFlowTest {
       // Now graph building should succeed.
       g.opBuilder("MyTest", "MyTest").build();
     }
-  }
-
-  private void disableOnPlatform(String platform) {
-    String current = System.getProperty("NATIVE_PLATFORM");
-    assumeFalse(current != null && current.startsWith(platform.toLowerCase()));
   }
 }

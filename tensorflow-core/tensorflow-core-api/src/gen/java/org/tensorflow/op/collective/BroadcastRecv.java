@@ -22,11 +22,11 @@ import org.tensorflow.Operand;
 import org.tensorflow.Operation;
 import org.tensorflow.OperationBuilder;
 import org.tensorflow.Output;
+import org.tensorflow.ndarray.Shape;
 import org.tensorflow.op.RawOp;
 import org.tensorflow.op.Scope;
 import org.tensorflow.op.annotation.Endpoint;
 import org.tensorflow.op.annotation.Operator;
-import org.tensorflow.tools.Shape;
 import org.tensorflow.types.family.TType;
 
 /**
@@ -49,7 +49,16 @@ public final class BroadcastRecv<T extends TType> extends RawOp implements Opera
       return this;
     }
     
+    /**
+     * @param timeoutSeconds 
+     */
+    public Options timeoutSeconds(Float timeoutSeconds) {
+      this.timeoutSeconds = timeoutSeconds;
+      return this;
+    }
+    
     private String communicationHint;
+    private Float timeoutSeconds;
     
     private Options() {
     }
@@ -81,6 +90,9 @@ public final class BroadcastRecv<T extends TType> extends RawOp implements Opera
         if (opts.communicationHint != null) {
           opBuilder.setAttr("communication_hint", opts.communicationHint);
         }
+        if (opts.timeoutSeconds != null) {
+          opBuilder.setAttr("timeout_seconds", opts.timeoutSeconds);
+        }
       }
     }
     return new BroadcastRecv<T>(opBuilder.build());
@@ -91,6 +103,13 @@ public final class BroadcastRecv<T extends TType> extends RawOp implements Opera
    */
   public static Options communicationHint(String communicationHint) {
     return new Options().communicationHint(communicationHint);
+  }
+  
+  /**
+   * @param timeoutSeconds 
+   */
+  public static Options timeoutSeconds(Float timeoutSeconds) {
+    return new Options().timeoutSeconds(timeoutSeconds);
   }
   
   /**

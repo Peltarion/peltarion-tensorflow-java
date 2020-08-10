@@ -6,9 +6,21 @@ on:
   pull_request:
     branches:
       - master
-
+    types: [opened, reopened, synchronize, labeled, unlabeled]
 jobs:
+  quick-build:
+    if: github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'CI build')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v1
+      - name: Build project
+        run: |
+          git --version
+          mvn -version
+          mvn clean install -Pdev -B -U -e
   linux-x86_64:
+    if: github.event_name == 'push' || contains(github.event.pull_request.labels.*.name, 'CI build')
     runs-on: ubuntu-latest
     container: nvidia/cuda:10.1-cudnn7-devel-centos7
     strategy:
@@ -19,7 +31,7 @@ jobs:
         run: |
           yum -y update
           yum -y install centos-release-scl-rh epel-release
-          yum -y install java-1.8.0-openjdk-devel devtoolset-7 rh-git218 patch python36-devel python36-pip python36-six
+          yum -y install java-1.8.0-openjdk-devel devtoolset-7 rh-git218 patch python36-devel python36-numpy python36-pip python36-six
           echo Downloading Maven
           curl -L https://archive.apache.org/dist/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz -o $HOME/apache-maven-3.6.3-bin.tar.gz
           tar xzf $HOME/apache-maven-3.6.3-bin.tar.gz -C /opt/
@@ -42,7 +54,7 @@ jobs:
           gcc --version
           mvn -version
           bazel version
-          sed -i.bak -e "s/0.1.0-SNAPSHOT/0.1.0-PELTARION-${{ github.sha }}/" `find . -name 'pom.xml'`
+          sed -i.bak -e "s/0.2.0-SNAPSHOT/0.2.0-PELTARION-${{ github.sha }}/" `find . -name 'pom.xml'`
           mvn clean install -B -U -e -Djavacpp.platform=linux-x86_64 -Djavacpp.platform.extension=${{ matrix.ext }}
       - name: Upload artifact
         uses:  actions/upload-artifact@v2
@@ -50,6 +62,7 @@ jobs:
           name: linux-jars${{ matrix.ext }}
           path: /root/.m2/repository/org/tensorflow/**/*
   macosx-x86_64:
+    if: github.event_name == 'push' || contains(github.event.pull_request.labels.*.name, 'CI build')
     runs-on: macos-latest
     strategy:
       matrix:
@@ -57,7 +70,7 @@ jobs:
     steps:
       - name: Install environment
         run: |
-          python3 -m pip install six
+          python3 -m pip install numpy six
           echo Downloading Bazel
           curl -L https://github.com/bazelbuild/bazel/releases/download/2.0.0/bazel-2.0.0-installer-darwin-x86_64.sh -o bazel.sh --retry 10
           bash bazel.sh
@@ -77,27 +90,27 @@ jobs:
           mvn -version
           bazel version
           mkdir -p $HOME/.m2
-          sed -i .bak -e "s/0.1.0-SNAPSHOT/0.1.0-PELTARION-${{ github.sha }}/"  `find . -name 'pom.xml'`
+          sed -i .bak -e "s/0.2.0-SNAPSHOT/0.2.0-PELTARION-${{ github.sha }}/"  `find . -name 'pom.xml'`
           mvn clean install -B -U -e -Djavacpp.platform=macosx-x86_64 -Djavacpp.platform.extension=${{ matrix.ext }}
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
           name: macos-jars${{ matrix.ext }}
           path: /Users/runner/.m2/repository/org/tensorflow/**/*
-
+  #   if: github.event_name == 'push' || contains(github.event.pull_request.labels.*.name, 'CI build')
   # redeploy:
-  #   needs: [linux-x86_64, macosx-x86_64]
-  #   runs-on: ubuntu-latest
-  #   steps:
+    #    strategy:
+    #      matrix:
+    #        ext: ["", -mkl, -gpu, -mkl-gpu]
   #     - name: Checkout repository
   #       uses: actions/checkout@v1
   #     - name: Setup Java
   #       uses: actions/setup-java@v1
   #       with:
   #         java-version: 1.8
-  #     - name: Download Artifacts
-  #       uses: actions/download-artifact@v2
-  #       with:
+  #        python -m pip install numpy six
+  #        echo Removing broken version of Bash from WSL
+  #        rm.exe "C:/WINDOWS/system32/bash.EXE"
   #         name: macos-jars
   #     - name: Download Artifacts
   #       uses: actions/download-artifact@v2
@@ -118,3 +131,4 @@ jobs:
   #           fi
   #         done
   #         mvn clean deploy -Predeploy -N -B -U -e -Dfiles=$FILES -Dtypes=$TYPES -Dclassifiers=$CLASSIFIERS
+  #         set "PATH=C:\bazel;C:\Program Files\Git\bin;%ProgramFiles%\NVIDIA GPU Computing Toolkit\CUDA\v10.1\bin;%ProgramFiles%\NVIDIA GPU Computing Toolkit\CUDA\v10.1\libnvvp;%PATH%"
