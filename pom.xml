@@ -81,6 +81,7 @@
     </dependencies>
   </dependencyManagement>
 
+  <profiles>
     <!--
     Profile dev
         The 'dev' profile is used for local development or PR compilation check only.
@@ -93,20 +94,14 @@
         <module>tensorflow-keras</module>
       </modules>
     </profile>
-    <!--
-    Profile ossrh
-        Deploys to ossrh/maven central
-    -->
+  </profiles>
+
   <distributionManagement>
     <repository>
       <id>github</id>
       <url>https://maven.pkg.github.com/Peltarion/peltarion-tensorflow-java</url>
     </repository>
   </distributionManagement>
-    <!--
-    Profile bintray
-        Deploys to bintray/jcenter
-    -->
 
   <!-- http://central.sonatype.org/pages/requirements.html#developer-information -->
   <developers>
